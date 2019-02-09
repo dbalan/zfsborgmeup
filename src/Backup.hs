@@ -1,44 +1,46 @@
-module Backup ( Date(..)
-              , Backup(..)
+module Backup ( Backup(..)
               , Frequency
               , latestBackup
               ) where
 
 import Data.Ord
 import Data.List
-
-data Date = Date { day :: Int
-                 , month :: Int
-                 , year :: Int
-                 }
-            deriving (Eq, Show)
-
-instance Ord Date where
-  compare d1 d2
-    | d1 == d2 = EQ
-    | (year d1) > (year d2) = GT
-    | (month d1) > (month d2) = GT
-    | (day d1) > (day d2) = GT
-    | otherwise = LT
+import qualified Data.Time.Calendar as T
 
 data Frequency = Daily | Weekly | Monthly
   deriving (Show, Eq)
 
 data Backup = Backup { freq :: Frequency
-                     , date :: Date
+                     , date :: T.Day
                      }
               deriving (Show, Eq)
 
 
-latestBackup :: [Backup] -> Frequency -> Date
-latestBackup lb frq = date $ head sortedBkup
+latestBackup :: [Backup] -> Frequency -> Backup
+latestBackup lb frq = head sortedBkup
   where
-    bfreq = filter (\(Backup f _) -> f == frq) lb
+    bfreq = filter (\b-> (freq b) == frq) lb
     sortedBkup = sortBy (\b1 b2 -> compare (date b1) (date b2)) bfreq
 
-backupFreq :: Frequency -> Int
+backupFreq :: Frequency -> Integer
 backupFreq f = case f of
   Daily -> 1
   Weekly -> 7
   Monthly -> 30
 
+nextBackup :: Backup -> Backup
+nextBackup bk = Backup f nd
+  where
+    f = freq bk
+    nd = T.addDays (backupFreq f) $ date bk
+
+singleToRun :: [Backup] -> Frequency -> Backup
+singleToRun bk f = nextBackup $ latestBackup bk f
+
+-- toRun looks at all the current backups and figures out next backups to run
+toRun :: [Backup] -> [Backup]
+toRun bk = map (singleToRun bk) [Daily, Weekly, Monthly]
+
+-- should we run the backup today
+shouldRun :: Backup -> T.Day -> Bool
+shouldRun bk d = d <= date bk
