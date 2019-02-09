@@ -1,6 +1,6 @@
 module Backup ( Backup(..)
               , Frequency
-              , latestBackup
+              , toRun
               ) where
 
 import Data.Ord
@@ -14,7 +14,6 @@ data Backup = Backup { freq :: Frequency
                      , date :: T.Day
                      }
               deriving (Show, Eq)
-
 
 latestBackup :: [Backup] -> Frequency -> Backup
 latestBackup lb frq = head sortedBkup
@@ -37,9 +36,10 @@ nextBackup bk = Backup f nd
 singleToRun :: [Backup] -> Frequency -> Backup
 singleToRun bk f = nextBackup $ latestBackup bk f
 
+backup0 = map (\f -> Backup f $ T.fromGregorian 0 0 0) [Monthly, Daily, Weekly]
 -- toRun looks at all the current backups and figures out next backups to run
 toRun :: [Backup] -> [Backup]
-toRun bk = map (singleToRun bk) [Daily, Weekly, Monthly]
+toRun bk = map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
 
 -- should we run the backup today
 shouldRun :: Backup -> T.Day -> Bool
