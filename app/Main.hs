@@ -12,7 +12,6 @@ main :: IO ()
 main = do
   putStrLn $ show $ toRun []
 
-
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
 backupDataset = undefined

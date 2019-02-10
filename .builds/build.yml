@@ -1,7 +1,6 @@
 image: archlinux
 packages:
   - stack
-  - ghc
 sources:
   - https://github.com/dbalan/zfsborgmeup
 tasks:
