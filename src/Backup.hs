@@ -1,6 +1,6 @@
 
 module Backup ( Backup(..)
-              , Frequency
+              , Frequency(..)
               , toRun
               , fromSnapshot
               ) where

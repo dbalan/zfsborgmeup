@@ -1,4 +1,3 @@
-
 module Main where
 
 import Backup
@@ -11,7 +10,6 @@ import qualified Control.Foldl as CF
 main :: IO ()
 main = do
   putStrLn $ show $ toRun []
-
 
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
@@ -32,4 +30,3 @@ snapShots ds = do
 getSnapList ds = grep ptrn (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o", "name"] empty)
   where
     ptrn = P.prefix $ P.text $ T.pack (ds ++ "@")
-
