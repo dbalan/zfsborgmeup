@@ -20,11 +20,19 @@ data Backup = Backup { freq :: Frequency
               deriving (Show, Eq)
 
 -- FIXME: fix this ugly parsing
--- fromSnapshot :: String -> [String]
-fromSnapshot s = sfd
+fromSnapshot :: String -> Backup
+fromSnapshot s = Backup freq $ readDate (sfd !! 1)
   where
     sname = splitOn "@" s !! 1
     sfd = splitOn "-" sname
+    freq = read (head sfd) :: Frequency
+
+-- FIXME: this parsing is bad
+readDate s = T.fromGregorian year month day
+  where
+    year = read (take 4 s) :: Integer
+    month = read (take 2 $ drop 4 s) :: Int
+    day = read (take 2 $ drop 6 s) :: Int
 
 latestBackup :: [Backup] -> Frequency -> Backup
 latestBackup lb frq = head sortedBkup
