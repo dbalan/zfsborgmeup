@@ -1,0 +1,12 @@
+image: freebsd
+packages:
+  - stack
+  - ghc
+sources:
+  - https://github.com/dbalan/zfsborgmeup
+tasks:
+  - build_test: |
+      uname -a
+      cd zfsborgmeup
+      stack build
+      stack test
