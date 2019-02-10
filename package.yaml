@@ -19,9 +19,16 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/dbalan/zfsborgmeup#readme>
 
+default-extensions:
+- OverloadedStrings
+
 dependencies:
 - base >= 4.7 && < 5
 - time
+- turtle
+- text
+- foldl
+- split
 
 library:
   source-dirs: src

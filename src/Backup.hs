@@ -1,19 +1,30 @@
+
 module Backup ( Backup(..)
               , Frequency
               , toRun
+              , fromSnapshot
               ) where
 
 import Data.Ord
 import Data.List
 import qualified Data.Time.Calendar as T
+import Data.List.Split
+import qualified Data.Text as T
 
 data Frequency = Daily | Weekly | Monthly
-  deriving (Show, Eq)
+  deriving (Show, Eq, Read)
 
 data Backup = Backup { freq :: Frequency
                      , date :: T.Day
                      }
               deriving (Show, Eq)
+
+-- FIXME: fix this ugly parsing
+-- fromSnapshot :: String -> [String]
+fromSnapshot s = sfd
+  where
+    sname = splitOn "@" s !! 1
+    sfd = splitOn "-" sname
 
 latestBackup :: [Backup] -> Frequency -> Backup
 latestBackup lb frq = head sortedBkup
