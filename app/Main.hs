@@ -18,7 +18,9 @@ backupDataset :: String -> IO ()
 backupDataset = undefined
 
 allBackups :: String -> IO [Backup]
-allBackups ds = undefined
+allBackups ds = do
+  sli <- snapShots ds
+  return $ map (fromSnapshot . T.unpack) sli
 
 snapShots :: MonadIO m => String -> m [Text]
 snapShots ds = do
