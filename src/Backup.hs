@@ -38,7 +38,7 @@ latestBackup :: [Backup] -> Frequency -> Backup
 latestBackup lb frq = head sortedBkup
   where
     bfreq = filter (\b-> (freq b) == frq) lb
-    sortedBkup = sortBy (\b1 b2 -> compare (date b1) (date b2)) bfreq
+    sortedBkup = reverse $ sortBy (\b1 b2 -> compare (date b1) (date b2)) bfreq
 
 backupFreq :: Frequency -> Integer
 backupFreq f = case f of
@@ -57,9 +57,9 @@ singleToRun bk f = nextBackup $ latestBackup bk f
 
 backup0 = map (\f -> Backup f $ T.fromGregorian 0 0 0) [Monthly, Daily, Weekly]
 -- toRun looks at all the current backups and figures out next backups to run
-toRun :: [Backup] -> [Backup]
-toRun bk = map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
+toRun :: T.Day -> [Backup] -> [Backup]
+toRun today bk = filter (shouldRun today) $ map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
 
 -- should we run the backup today
-shouldRun :: Backup -> T.Day -> Bool
-shouldRun bk d = d <= date bk
+shouldRun :: T.Day -> Backup -> Bool
+shouldRun d bk = d >= date bk

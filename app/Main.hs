@@ -9,7 +9,7 @@ import qualified Control.Foldl as CF
 
 main :: IO ()
 main = do
-  putStrLn $ show $ toRun []
+  putStrLn "not yet"
 
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
