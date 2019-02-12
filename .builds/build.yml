@@ -1,4 +1,4 @@
-image: archlinux
+image: freebsd/12.x
 packages:
   - stack
   - ghc

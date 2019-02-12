@@ -57,9 +57,8 @@ singleToRun bk f = nextBackup $ latestBackup bk f
 
 backup0 = map (\f -> Backup f $ T.fromGregorian 0 0 0) [Monthly, Daily, Weekly]
 -- toRun looks at all the current backups and figures out next backups to run
-toRun :: [Backup] -> [Backup]
-toRun bk = map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
+toRun :: [Backup] -> T.Day -> [Backup]
+toRun bk day = filter (shouldRun day) $ map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
 
 -- should we run the backup today
-shouldRun :: Backup -> T.Day -> Bool
-shouldRun bk d = d <= date bk
+shouldRun d bk = d <= date bk

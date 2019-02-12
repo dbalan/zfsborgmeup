@@ -12,7 +12,8 @@ main = hspec $ do
 
   describe "Backup.toRun" $ do
     it "empty should not fail" $ do
-      (length $ toRun []) `shouldBe` (3 :: Int)
+      let today = fromGregorian 2019 01 01
+      (length $ toRun [] today) `shouldBe` (3 :: Int)
     it "a single daily backup should produce monthly and weekly" $ do
-      (map freq $ toRun [Backup Daily (fromGregorian 2018 1 1)]) `shouldBe`
-        [Daily, Weekly, Monthly]
+      let today = fromGregorian 2018 1 1
+      (toRun [(Backup Daily today)] today) `shouldBe` []
