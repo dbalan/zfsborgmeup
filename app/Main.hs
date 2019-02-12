@@ -1,19 +1,25 @@
 module Main where
 
 import Backup
-import Data.Time.Calendar
+import Data.Time.Clock (getCurrentTime, UTCTime(..))
 import qualified Data.Text as T
 import Turtle
 import qualified Turtle.Pattern as P
 import qualified Control.Foldl as CF
 
 main :: IO ()
-main = do
-  putStrLn "not yet"
+main = backupDataset "testpool/documents"
 
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
-backupDataset = undefined
+backupDataset ds = do
+  echo $ "starting backup: " <> unsafeToLine ds
+  -- FIXME: check if dataset exists
+  backups <- allBackups ds
+  -- we will always be in UTC. don't screw this up
+  today <- getCurrentTime
+  let rn = toRun (utctDay today) backups
+  echo $ "will run " <> (unsafeToLine $ show (map freq rn))
 
 allBackups :: String -> IO [Backup]
 allBackups ds = do
@@ -27,6 +33,14 @@ snapShots ds = do
   return $ map lineToText snlines
 
 -- getSnapList :: String -> Shell line
-getSnapList ds = grep ptrn (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o", "name"] empty)
+getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o", "name"] empty)
   where
-    ptrn = P.prefix $ P.text $ T.pack (ds ++ "@")
+    ptrn freq = P.prefix $ P.text $ T.pack (ds ++ "@" ++ freq)
+    ptrns = ptrn "Monthly" <|> ptrn "Weekly"  <|> ptrn "Daily"
+
+runLocalBackup :: String -> Frequency -> IO Either String Backup
+runLocalBackup = undefined
+
+-- if arg contains new lines, this will explode
+unsafeToLine :: String -> Line
+unsafeToLine s = unsafeTextToLine $ T.pack s

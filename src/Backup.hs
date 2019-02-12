@@ -60,6 +60,6 @@ backup0 = map (\f -> Backup f $ T.fromGregorian 0 0 0) [Monthly, Daily, Weekly]
 toRun :: T.Day -> [Backup] -> [Backup]
 toRun today bk = filter (shouldRun today) $ map (singleToRun $ bk++backup0) [Daily, Weekly, Monthly]
 
--- should we run the backup today
+-- should we run the backup on a specific day
 shouldRun :: T.Day -> Backup -> Bool
 shouldRun d bk = d >= date bk
