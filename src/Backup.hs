@@ -9,7 +9,6 @@ import Data.Ord
 import Data.List
 import qualified Data.Time.Calendar as T
 import Data.List.Split
-import qualified Data.Text as T
 
 data Frequency = Daily | Weekly | Monthly
   deriving (Show, Eq, Read)
@@ -17,22 +16,18 @@ data Frequency = Daily | Weekly | Monthly
 data Backup = Backup { freq :: Frequency
                      , date :: T.Day
                      }
-              deriving (Show, Eq)
+              deriving (Eq)
 
--- FIXME: fix this ugly parsing
+instance Show Backup where
+  show bk = (show $ freq bk) ++ "-" ++ (show $ date bk)
+
+-- FIXME: this ugly parsing
 fromSnapshot :: String -> Backup
-fromSnapshot s = Backup freq $ readDate (sfd !! 1)
-  where
-    sname = splitOn "@" s !! 1
-    sfd = splitOn "-" sname
-    freq = read (head sfd) :: Frequency
-
--- FIXME: this parsing is bad
-readDate s = T.fromGregorian year month day
-  where
-    year = read (take 4 s) :: Integer
-    month = read (take 2 $ drop 4 s) :: Int
-    day = read (take 2 $ drop 6 s) :: Int
+fromSnapshot str = Backup (read f :: Frequency) (read dt :: T.Day)
+    where
+      snp = concat $ tail $ splitOn "@" str
+      f = head $ splitOn "-" snp
+      dt = snd $ splitAt ((length f)+1) snp
 
 latestBackup :: [Backup] -> Frequency -> Backup
 latestBackup lb frq = head sortedBkup

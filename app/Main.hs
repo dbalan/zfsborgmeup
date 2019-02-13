@@ -38,9 +38,6 @@ getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o",
     ptrn freq = P.prefix $ P.text $ T.pack (ds ++ "@" ++ freq)
     ptrns = ptrn "Monthly" <|> ptrn "Weekly"  <|> ptrn "Daily"
 
-runLocalBackup :: String -> Frequency -> IO Either String Backup
-runLocalBackup = undefined
-
 -- if arg contains new lines, this will explode
 unsafeToLine :: String -> Line
 unsafeToLine s = unsafeTextToLine $ T.pack s

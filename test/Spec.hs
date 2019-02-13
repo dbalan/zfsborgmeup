@@ -7,7 +7,7 @@ main :: IO ()
 main = hspec $ do
   describe "Backup.fromSnapshot" $ do
     it "should parse a proper snapshot name" $ do
-      fromSnapshot "zroot/dataset@Weekly-20190102" `shouldBe`
+      fromSnapshot "zroot/dataset@Weekly-2019-01-02" `shouldBe`
         (Backup Weekly $ fromGregorian 2019 01 02)
 
   describe "Backup.toRun" $ do
