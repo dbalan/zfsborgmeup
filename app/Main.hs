@@ -1,15 +1,27 @@
 module Main where
 
-import Backup
+
 import Data.Time.Clock (getCurrentTime, UTCTime(..))
-import qualified Data.Text as T
 import Turtle
+import qualified Data.Text as T
 import qualified Turtle.Pattern as P
 import qualified Control.Foldl as CF
+import qualified System.Environment.XDG.BaseDir as DT
+
+import Backup
+import Config
 
 main :: IO ()
-main = backupDataset "testpool/documents"
+main = do
+  conffl <- DT.getUserConfigDir "zfsborgmeup/config.yaml"
+  config <- readConfig conffl
+  case config of
+    Left msg -> echo $ "error: parsing config " <> unsafeToLine msg
+    Right conf -> putStrLn $ show conf
 
+runBackup :: MonadIO m => BackupConfig -> m [Bool]
+runBackup bk = do
+  
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
 backupDataset ds = do

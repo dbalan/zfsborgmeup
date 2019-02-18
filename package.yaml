@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/dbal
 
 default-extensions:
 - OverloadedStrings
+- DeriveGeneric
 
 dependencies:
 - base >= 4.7 && < 5
@@ -29,6 +30,9 @@ dependencies:
 - text
 - foldl
 - split
+- yaml
+- bytestring
+- xdg-basedir
 
 library:
   source-dirs: src
