@@ -1,6 +1,5 @@
 module Main where
 
-
 import Data.Time.Clock (getCurrentTime, UTCTime(..))
 import Turtle
 import qualified Data.Text as T
@@ -11,17 +10,13 @@ import qualified System.Environment.XDG.BaseDir as DT
 import Backup
 import Config
 
+
 main :: IO ()
 main = do
   conffl <- DT.getUserConfigDir "zfsborgmeup/config.yaml"
   config <- readConfig conffl
-  case config of
-    Left msg -> echo $ "error: parsing config " <> unsafeToLine msg
-    Right conf -> putStrLn $ show conf
+  mapM_ backupDataset $ map dataset config
 
-runBackup :: MonadIO m => BackupConfig -> m [Bool]
-runBackup bk = do
-  
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
 backupDataset ds = do
@@ -32,6 +27,7 @@ backupDataset ds = do
   today <- getCurrentTime
   let rn = toRun (utctDay today) backups
   echo $ "will run " <> (unsafeToLine $ show (map freq rn))
+
 
 allBackups :: String -> IO [Backup]
 allBackups ds = do

@@ -1,6 +1,11 @@
-module Lib
-    ( someFunc
-    ) where
+module Lib ( module Exports
+           , BkError(..)
+           ) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+import Control.Exception as Exports (Exception, throwIO)
+import Control.Exception (Exception)
+
+data BkError = BkError String
+  deriving (Eq, Show)
+
+instance Exception BkError
