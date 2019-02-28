@@ -33,6 +33,7 @@ dependencies:
 - yaml
 - bytestring
 - xdg-basedir
+- unliftio
 
 library:
   source-dirs: src

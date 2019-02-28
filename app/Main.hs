@@ -10,7 +10,6 @@ import qualified System.Environment.XDG.BaseDir as DT
 import Backup
 import Config
 
-
 main :: IO ()
 main = do
   conffl <- DT.getUserConfigDir "zfsborgmeup/config.yaml"
