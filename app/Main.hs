@@ -20,27 +20,22 @@ main = do
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
 backupDataset ds = do
-  echo $ "starting backup: " <> unsafeToLine ds
+  echo $ "info: starting backup: " <> unsafeToLine ds
   -- FIXME: check if dataset exists
   backups <- allBackups ds
   -- we will always be in UTC. don't screw this up
   today <- getCurrentTime
   let rn = toRun (utctDay today) backups
-  echo $ "will run " <> (unsafeToLine $ show (map freq rn))
+  echo $ "info: will run " <> (unsafeToLine $ show (map freq rn))
   mapM_ (runBackup ds) (map freq rn)
-  
+  echo $ "info: all good!"
+
 allBackups :: MonadIO m => String -> m [Backup]
 allBackups ds = do
-  sli <- snapShots ds
-  return $ map (fromSnapshot . T.unpack) sli
+  snlines <- fold (getSnapList ds) CF.list
+  return $ map (fromSnapshot . T.unpack . lineToText) snlines
 
-snapShots :: MonadIO m => String -> m [Text]
-snapShots ds = do
-  let snap = getSnapList ds
-  snlines <- fold snap CF.list
-  return $ map lineToText snlines
-
--- getSnapList :: String -> Shell line
+getSnapList :: String -> Shell Line
 getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o", "name"] empty)
   where
     ptrn freq = P.prefix $ P.text $ T.pack (ds ++ "@" ++ freq)
@@ -50,13 +45,8 @@ getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o",
 unsafeToLine :: String -> Line
 unsafeToLine s = unsafeTextToLine $ T.pack s
 
-runBackup :: String -> Frequency -> IO ()
+runBackup :: String -> Frequency -> IO ExitCode
 runBackup ds f = do
   today <- getCurrentTime
-  let backup =  ds ++ "@" ++ (show $ Backup f $ utctDay today)
-  zfsSnap $ T.pack backup
-  return ()
-
-zfsSnap :: Text -> IO ExitCode
-zfsSnap s = shell ("echo zfs snapshot -t " <> s) empty
-
+  let backup =  T.pack $ ds ++ "@" ++ (show $ Backup f $ utctDay today)
+  shell ("echo zfs snapshot -t " <> backup) empty
