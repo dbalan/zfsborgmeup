@@ -7,5 +7,4 @@ import Control.Exception (Exception)
 
 data BkError = BkError String
   deriving (Eq, Show)
-
 instance Exception BkError
