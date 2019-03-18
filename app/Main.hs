@@ -5,7 +5,6 @@ import           Turtle
 import qualified Data.Text as T
 import qualified Turtle.Pattern as P
 import qualified Control.Foldl as CF
-import qualified System.Environment.XDG.BaseDir as DT
 import           Data.Time.Clock
 
 import           Backup
@@ -13,8 +12,7 @@ import           Config
 
 main :: IO ()
 main = do
-  conffl <- DT.getUserConfigDir "zfsborgmeup/config.yaml"
-  config <- readConfig conffl
+  config <- loadConfig
   mapM_ backupDataset $ map dataset config
 
 -- backs up a specific dataset
@@ -27,7 +25,7 @@ backupDataset ds = do
   today <- getCurrentTime
   let rn = toRun (utctDay today) backups
   echo $ "info: will run " <> (unsafeToLine $ show (map freq rn))
-  mapM_ (runBackup ds) (map freq rn)
+  mapM_ (liftIO . runBackup ds) (map freq rn)
   echo $ "info: all good!"
 
 allBackups :: MonadIO m => String -> m [Backup]
@@ -45,8 +43,9 @@ getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o",
 unsafeToLine :: String -> Line
 unsafeToLine s = unsafeTextToLine $ T.pack s
 
-runBackup :: String -> Frequency -> IO ExitCode
+
+runBackup :: MonadIO m => String -> Frequency -> m ExitCode
 runBackup ds f = do
-  today <- getCurrentTime
+  today <- liftIO getCurrentTime
   let backup =  T.pack $ ds ++ "@" ++ (show $ Backup f $ utctDay today)
   shell ("echo zfs snapshot -t " <> backup) empty

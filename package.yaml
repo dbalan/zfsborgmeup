@@ -34,6 +34,8 @@ dependencies:
 - bytestring
 - xdg-basedir
 - unliftio
+- path-io
+- path
 
 library:
   source-dirs: src
