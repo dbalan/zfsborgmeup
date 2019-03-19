@@ -1,7 +1,8 @@
 module Main where
 
 import           Data.Time.Clock (getCurrentTime, UTCTime(..))
-import           Turtle
+import           Turtle hiding (header)
+import           Options.Applicative
 import qualified Data.Text as T
 import qualified Turtle.Pattern as P
 import qualified Control.Foldl as CF
@@ -10,10 +11,27 @@ import           Data.Time.Clock
 import           Backup
 import           Config
 
+data ZfsBorgMeCmd = ShowConfig
+                  | RunBackup
+                  deriving (Eq, Show)
+cmdParser :: Parser ZfsBorgMeCmd
+cmdParser = flag' ShowConfig (long "show-config" <> help "print current config")
+      <|> flag' RunBackup (long "run-backup" <> help "run local-backup")
+
+cmd :: ParserInfo ZfsBorgMeCmd
+cmd = info (cmdParser <**> helper)
+  (fullDesc
+  <> progDesc "Backup manager for local (zfs) and remote (borg) backup"
+  <> header "ZFSBorgMeUp - zfs backup manager")
+
 main :: IO ()
 main = do
-  config <- loadConfig
-  mapM_ backupDataset $ map dataset config
+  opts <- execParser cmd
+  case opts of
+    ShowConfig -> putStrLn "show-config"
+    RunBackup -> putStrLn "run-backup"
+--  config <- loadConfig
+--  mapM_ backupDataset $ map dataset config
 
 -- backs up a specific dataset
 backupDataset :: String -> IO ()

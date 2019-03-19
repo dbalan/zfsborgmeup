@@ -36,6 +36,7 @@ dependencies:
 - unliftio
 - path-io
 - path
+- optparse-applicative
 
 library:
   source-dirs: src
