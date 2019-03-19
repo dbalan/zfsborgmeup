@@ -38,8 +38,13 @@ getSnapList ds = grep ptrns (inproc "zfs" ["list", "-t", "snapshot", "-H", "-o",
 unsafeToLine :: String -> Line
 unsafeToLine s = unsafeTextToLine $ T.pack s
 
-runBackup :: MonadIO m => String -> Frequency -> m ExitCode
+-- your user should have permission to do this!
+-- see zfs allow
+runBackup :: MonadIO m => String -> Frequency -> m ()
 runBackup ds f = do
   today <- liftIO getCurrentTime
   let backup =  T.pack $ ds ++ "@" ++ (show $ Backup f $ utctDay today)
-  shell ("echo zfs snapshot -t " <> backup) empty
+  exit <- shell ("zfs snapshot " <> backup) empty
+  case exit of
+    ExitSuccess -> return ()
+    ExitFailure n -> die ("zfs snapshot failed with :" <> repr n)
