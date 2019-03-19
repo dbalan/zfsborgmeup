@@ -2,6 +2,7 @@
 
 module Config ( BackupConfig(..)
               , loadConfig
+              , showConfig
               ) where
 
 import           Control.Monad (when)
@@ -39,3 +40,8 @@ loadConfig :: MonadIO m => m [BackupConfig]
 loadConfig = do
   cfp <- configFile
   Y.decodeFileThrow (toFilePath cfp)
+
+showConfig :: MonadIO m => m B.ByteString
+showConfig = do
+  cfg <- loadConfig
+  return $ Y.encode cfg

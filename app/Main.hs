@@ -3,6 +3,7 @@ module Main where
 import           Options.Applicative
 import           RunBackup
 import           Config
+import qualified Data.ByteString as B
 
 data ZfsBorgMeCmd = ShowConfig
                   | RunBackup
@@ -23,10 +24,15 @@ main :: IO ()
 main = do
   opts <- execParser cmd
   case opts of
-    ShowConfig -> putStrLn "show-config"
+    ShowConfig -> printConfig
     RunBackup -> backup
 
 backup :: IO ()
 backup = do
   config <- loadConfig
   mapM_ backupDataset $ map dataset config
+
+printConfig :: IO ()
+printConfig = do
+  config <- showConfig
+  B.putStr $ config
