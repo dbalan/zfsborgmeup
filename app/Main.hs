@@ -7,6 +7,7 @@ import           Config
 data ZfsBorgMeCmd = ShowConfig
                   | RunBackup
                   deriving (Eq, Show)
+
 cmdParser :: Parser ZfsBorgMeCmd
 cmdParser = subparser (
   command "show-config" (info (pure ShowConfig) (progDesc "print current config"))

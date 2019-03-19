@@ -42,7 +42,7 @@ library:
   source-dirs: src
 
 executables:
-  zfsborgmeup-exe:
+  zfsborgmeup:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
