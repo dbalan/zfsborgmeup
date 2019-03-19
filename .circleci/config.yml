@@ -7,7 +7,10 @@ jobs:
       - checkout
       - run:
           name: Who am I?
-          command: uname -i
+          command: uname -a
       - run:
-          name: Print the Current Time
+          name: Build
+          command: stack build
+      - run:
+          name: Test
           command: stack test
