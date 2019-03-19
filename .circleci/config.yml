@@ -5,6 +5,9 @@ jobs:
     - image: haskell:8.6.3
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - stack-work-{{ checksum "package.yaml" }}
       - run:
           name: Who am I?
           command: uname -a
@@ -14,3 +17,7 @@ jobs:
       - run:
           name: Test
           command: stack test
+      - save_cache:
+          key: stack-work-{{ checksum "package.yaml" }}
+          paths:
+            - .stack-work
