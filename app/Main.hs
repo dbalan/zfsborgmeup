@@ -15,8 +15,9 @@ data ZfsBorgMeCmd = ShowConfig
                   | RunBackup
                   deriving (Eq, Show)
 cmdParser :: Parser ZfsBorgMeCmd
-cmdParser = flag' ShowConfig (long "show-config" <> help "print current config")
-      <|> flag' RunBackup (long "run-backup" <> help "run local-backup")
+cmdParser = subparser (
+  command "show-config" (info (pure ShowConfig) (progDesc "print current config"))
+  <> command "run-backup" (info (pure RunBackup) (progDesc "run local-backup")))
 
 cmd :: ParserInfo ZfsBorgMeCmd
 cmd = info (cmdParser <**> helper)
