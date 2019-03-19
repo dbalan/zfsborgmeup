@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: haskell:8.6.3
+    steps:
+      - checkout
+      - run:
+          name: Who am I?
+          command: uname -i
+      - run:
+          name: Print the Current Time
+          command: stack test
