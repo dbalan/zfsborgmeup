@@ -1,6 +1,6 @@
 # zfsborgmeup
 
-[![builds.sr.ht status](https://builds.sr.ht/~dbalan/zfsborgmeup.svg)](https://builds.sr.ht/~dbalan/zfsborgmeup?)
+[![CircleCI](https://circleci.com/gh/dbalan/zfsborgmeup.svg?style=svg)](https://circleci.com/gh/dbalan/zfsborgmeup)
 
 A thin backup manager to manage local and off-site backups around zfs and borg.
 
