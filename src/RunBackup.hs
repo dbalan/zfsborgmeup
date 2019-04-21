@@ -1,4 +1,4 @@
-module RunBackup (backupDataset)
+module RunBackup (backupDataset, pruneBackup)
   where
 
 import qualified Control.Monad.IO.Class (MonadIO)
@@ -8,7 +8,7 @@ import qualified Turtle.Pattern as P
 import           Data.Time.Clock (getCurrentTime, UTCTime(..))
 import qualified Control.Foldl as F
 import           Backup
-
+import           Config
 
 -- backs up a specific dataset
 backupDataset :: String -> IO ()
@@ -48,3 +48,10 @@ runBackup ds f = do
   case exit of
     ExitSuccess -> return ()
     ExitFailure n -> die ("zfs snapshot failed with :" <> repr n)
+
+pruneBackup :: MonadIO m => BackupConfig -> m ()
+pruneBackup conf = do
+  bks <- allBackups (dataset conf)
+  echo "info: starting prune"
+  let del = toPrune conf bks
+  echo $ "info: will prune " <> (unsafeToLine $ show del)

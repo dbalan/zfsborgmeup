@@ -31,6 +31,7 @@ backup :: IO ()
 backup = do
   config <- loadConfig
   mapM_ backupDataset $ map dataset config
+  mapM_ pruneBackup config
 
 printConfig :: IO ()
 printConfig = do
