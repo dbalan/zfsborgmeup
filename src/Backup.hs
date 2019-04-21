@@ -2,11 +2,13 @@
 module Backup ( Backup(..)
               , Frequency(..)
               , toRun
+              , toPrune
               , fromSnapshot
               ) where
 
 import Data.Ord
 import Data.List
+import Config
 import qualified Data.Time.Calendar as T
 import Data.List.Split
 
@@ -61,4 +63,18 @@ toRun today bk = filter (shouldRun today) $ map (singleToRun $ bk++backup0) [Dai
 -- should we run the backup on a specific day
 shouldRun :: T.Day -> Backup -> Bool
 shouldRun d bk = d >= date bk
+
+toPrune :: BackupConfig -> [Backup] -> [Backup]
+toPrune c bl = d ++ w ++ m
+  where
+    w = prune (weekly c) (filtFreq Weekly bl)
+    m = prune (monthly c) (filtFreq Monthly bl)
+    d = prune (daily c) (filtFreq Daily bl)
+
+filtFreq f = filter (\x -> freq x == f)
+
+prune :: Int -> [Backup] -> [Backup]
+prune n bl = if lbl > 0 then take lbl (sort bl)
+             else []
+  where lbl = (length bl) - n
 
