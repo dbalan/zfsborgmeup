@@ -21,6 +21,9 @@ data Backup = Backup { freq :: Frequency
 instance Show Backup where
   show bk = (show $ freq bk) ++ "-" ++ (show $ date bk)
 
+instance Ord Backup where
+  compare bk1 bk2 = compare (date bk1) (date bk2)
+
 -- FIXME: this ugly parsing
 fromSnapshot :: String -> Backup
 fromSnapshot str = Backup (read f :: Frequency) (read dt :: T.Day)
@@ -58,3 +61,4 @@ toRun today bk = filter (shouldRun today) $ map (singleToRun $ bk++backup0) [Dai
 -- should we run the backup on a specific day
 shouldRun :: T.Day -> Backup -> Bool
 shouldRun d bk = d >= date bk
+
